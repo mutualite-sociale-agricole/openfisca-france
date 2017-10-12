@@ -137,25 +137,34 @@ class cmu_c_plafond(Variable):
     label = u"Plafond annuel de ressources pour l'éligibilité à la CMU-C"
     definition_period = MONTH
 
-    def formula(self, simulation, period):
-        age_holder = simulation.compute('age', period)
-        alt_holder = simulation.compute('garde_alternee', period)
-        cmu_eligible_majoration_dom = simulation.calculate('cmu_eligible_majoration_dom', period)
-        # cmu_nbp_foyer = simulation.calculate('cmu_nbp_foyer', period)
-        P = simulation.parameters_at(period.start).cmu
+    def formula(famille, period, parameters):
+        age_i = famille.members('age', period)
+        alt_i = famille.members('garde_alternee', period)
+        cmu_eligible_majoration_dom = famille('cmu_eligible_majoration_dom', period)
+        P = parameters(period).cmu
 
-        PAC = [PART] + ENFS
 
         # Calcul du coefficient personnes à charge, avec prise en compte de la garde alternée
 
+        famille_max_legacy_role = famille.members_legacy_role.max()
+
         # Tableau des coefficients
         coefficients_array = array(
-            [P.coeff_p2, P.coeff_p3_p4, P.coeff_p3_p4] + [P.coeff_p5_plus] * (len(PAC) - 3)
-            )
+            [P.coeff_p2, P.coeff_p3_p4, P.coeff_p3_p4] + [P.coeff_p5_plus] * (famille_max_legacy_role - 1 - 3)
+            )[:famille_max_legacy_role - 1]
+
+        age_by_role = {}
+        alt_by_role = {}
+        for role in range(2, famille_max_legacy_role + 1):
+            age = age_by_role[role] = famille.filled_array(-9999)  # default value
+            alt = alt_by_role[role] = famille.filled_array(False)  # default value
+            role_filter = (famille.members_legacy_role == role)
+
+            age[famille.members_entity_id[role_filter]] = age_i[role_filter]
+            alt[famille.members_entity_id[role_filter]] = alt_i[role_filter]
+
 
         # Tri des personnes à charge, le conjoint en premier, les enfants par âge décroissant
-        age_by_role = self.split_by_roles(age_holder, roles = PAC)
-        alt_by_role = self.split_by_roles(alt_holder, roles = PAC)
 
         age_and_alt_matrix = array(
             [
