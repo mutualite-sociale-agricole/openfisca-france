@@ -148,6 +148,12 @@ class cmu_c_plafond(Variable):
 
         famille_max_legacy_role = famille.members_legacy_role.max()
 
+        # Il y a seulement des familles d'une seule personne dans la simulation. Le calcul matriciel qui suit est inutile, et provoquerait une erreur.
+        if famille_max_legacy_role == 0:
+            return (P.plafond_base *
+                (1 + cmu_eligible_majoration_dom * P.majoration_dom)
+                )
+
         # Tableau des coefficients
         coefficients_array = array(
             [P.coeff_p2, P.coeff_p3_p4, P.coeff_p3_p4] + [P.coeff_p5_plus] * (famille_max_legacy_role - 1 - 3)
