@@ -57,7 +57,9 @@ class jour_xyz(Variable):
 
 class age(Variable):
     base_function = missing_value
-    column = AgeCol(val_type = "age")
+    unit = 'years'
+    value_type = int
+    default = -9999
     entity = Individu
     label = u"Âge (en années) au premier jour du mois"
     definition_period = MONTH
@@ -92,7 +94,9 @@ class age(Variable):
 
 class age_en_mois(Variable):
     base_function = missing_value
-    column = AgeCol(val_type = "months")
+    value_type = int
+    default = -9999
+    unit = 'months'
     entity = Individu
     label = u"Âge (en mois)"
     definition_period = MONTH
