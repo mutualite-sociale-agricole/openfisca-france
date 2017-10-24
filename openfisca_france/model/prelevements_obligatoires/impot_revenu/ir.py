@@ -63,6 +63,7 @@ class age(Variable):
     entity = Individu
     label = u"Âge (en années) au premier jour du mois"
     definition_period = MONTH
+    is_period_size_independent = True
     set_input = set_input_dispatch_by_period
 
     def formula(individu, period, parameters):
@@ -99,6 +100,7 @@ class age_en_mois(Variable):
     unit = 'months'
     entity = Individu
     label = u"Âge (en mois)"
+    is_period_size_independent = True
     definition_period = MONTH
 
     def formula(individu, period, parameters):

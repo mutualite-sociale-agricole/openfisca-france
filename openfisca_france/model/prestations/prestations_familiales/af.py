@@ -169,6 +169,8 @@ class af_age_aine(Variable):
     entity = Famille
     label = u"Allocations familiales - Âge de l'aîné des enfants éligibles"
     definition_period = MONTH
+    is_period_size_independent = True
+
 
     def formula(famille, period, parameters):
         pfam = parameters(period).prestations.prestations_familiales
